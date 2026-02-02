@@ -62,7 +62,7 @@
         networks:
           - name: "{{ network_name }}"
         volumes:
-          - "{{ playbook_dir }}/nginx.conf:/etc/nginx/conf.d/default.conf"
+          - "{{ playbook_dir }}/../../app/nginx.conf:/etc/nginx/conf.d/default.conf"
         restart: "{{ 'yes' if config_file is changed else 'no' }}"
       vars:
         config_file: "{{ ansible_facts['diff'] | default({}) }}"      

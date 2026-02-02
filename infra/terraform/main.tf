@@ -30,13 +30,10 @@ resource "docker_container" "nginx" {
     name = docker_network.private_network.name
   }
 
-  volumes {
-    host_path      = abspath("${path.module}/nginx.conf")
+volumes {
+    host_path      = abspath("${path.module}/../../app/nginx.conf")
     container_path = "/etc/nginx/conf.d/default.conf"
   }
-
-  depends_on = [docker_container.app]
-}
 
 output "app_url" {
   value = "http://localhost:8080"
