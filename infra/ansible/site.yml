@@ -17,11 +17,12 @@
     http_port: "8080"
 
   tasks:
-    - name: Ensure Python Docker SDK is installed
-      pip:
-        name: docker
+    - name: Ensure Python Docker SDK is installed (System Package)
+      ansible.builtin.apt:
+        name: python3-docker
         state: present
-      ignore_errors: yes 
+        update_cache: yes
+      become: yes
 
     - name: Create Nginx configuration file locally
       copy:
