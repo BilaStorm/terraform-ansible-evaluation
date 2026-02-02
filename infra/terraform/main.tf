@@ -20,7 +20,8 @@ resource "docker_image" "nginx" {
 resource "docker_container" "nginx" {
   name  = "tp-proxy"
   image = docker_image.nginx.name
-}
+
+
   ports {
     internal = 80
     external = 8080
@@ -30,10 +31,14 @@ resource "docker_container" "nginx" {
     name = docker_network.private_network.name
   }
 
-volumes {
+  volumes {
     host_path      = abspath("${path.module}/../../app/nginx.conf")
     container_path = "/etc/nginx/conf.d/default.conf"
   }
+
+  depends_on = [docker_container.app]
+
+}
 
 output "app_url" {
   value = "http://localhost:8080"
