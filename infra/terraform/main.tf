@@ -41,3 +41,12 @@ resource "docker_container" "nginx" {
 output "app_url" {
   value = "http://localhost:8080"
 }
+
+output "container_details" {
+  value = {
+    app_name   = docker_container.app.name
+    proxy_name = docker_container.nginx.name
+    network    = docker_network.private_network.name
+  }
+  description = "Détails de l'infrastructure déployée"
+}
