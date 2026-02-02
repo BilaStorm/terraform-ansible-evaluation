@@ -1,23 +1,31 @@
-name: CI
+name: CI - Build & Test
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main", "master" ]
   pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
-  build-and-smoke-test:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: |
-          # TODO: students must create app/Dockerfile so this works
-          docker build -t tp-app:ci ./app
+      - name: Build Docker Image
+        run: docker build -t tp-app:ci app/
 
-      - name: Run container + smoke test
-        run: |
-          docker run -d --rm -p 8080:5000 --name tp_app tp-app:ci
-          sleep 2
-          curl -f http://localhost:8080/health
+      - name: Run Container
+        run: docker run -d -p 8080:5000 --name test-app tp-app:ci
+
+      - name: Wait for startup
+        run: sleep 5
+
+      - name: Test Endpoint /health
+        run: curl -f http://localhost:8080/health
+        
+      - name: Show logs on failure
+        if: failure()
+        run: docker logs test-app
