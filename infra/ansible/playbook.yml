@@ -1,0 +1,70 @@
+---
+- name: Déploiement Idempotent de l'Application Flask
+  hosts: localhost
+  gather_facts: no
+  
+  vars:
+    project_root: "../app" 
+    app_image: "tp-app:latest"
+    network_name: "tp_network"
+    env_type: "production"   
+    app_port: "5000"         
+    exposed_port: "8080"     
+
+  tasks:
+    - name: S'assurer que le module Docker pour Python est installé
+      pip:
+        name: docker
+        state: present
+
+    - name: Créer le réseau Docker
+      community.docker.docker_network:
+        name: "{{ network_name }}"
+        state: present
+
+    - name: Build de l'image Docker de l'app
+      community.docker.docker_image:
+        name: "{{ app_image }}"
+        build:
+          path: "{{ project_root }}"
+        source: build
+        force_source: yes 
+
+    - name: Lancer le conteneur App
+      community.docker.docker_container:
+        name: tp-app
+        image: "{{ app_image }}"
+        state: started
+        restart_policy: on-failure
+        networks:
+          - name: "{{ network_name }}"
+        env:
+          APP_ENV: "{{ env_type }}"
+          PORT: "{{ app_port }}"
+
+    - name: Lancer le conteneur Nginx (Reverse Proxy)
+      community.docker.docker_container:
+        name: tp-proxy
+        image: nginx:alpine
+        state: started
+        ports:
+          - "{{ exposed_port }}:80" 
+        networks:
+          - name: "{{ network_name }}"
+        volumes:
+          - "{{ playbook_dir }}/nginx.conf:/etc/nginx/conf.d/default.conf"
+      
+    - name: Vérifier que l'application répond (Health Check)
+      uri:
+        url: "http://localhost:{{ exposed_port }}/health"
+        method: GET
+        status_code: 200
+        return_content: yes
+      register: result
+      retries: 5
+      delay: 2
+      until: result.status == 200
+
+    - name: Afficher le résultat du déploiement
+      debug:
+        msg: "Déploiement réussi ! Environnement: {{ env_type }}. Réponse: {{ result.json }}"
