@@ -1,4 +1,4 @@
-name: CI - Pipeline DevOps
+name: CI Pipeline
 
 on:
   push:
@@ -7,23 +7,29 @@ on:
     branches: [ "main", "master" ]
 
 jobs:
-  build-test-sec:
-    name: Build, Sécu & Test
+  quality:
+    name: Code Quality
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install flake8
+      - name: Run Linting
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
-      - name: Analyse du code (Flake8)
-        run: |
-          pip install flake8
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-
-      - name: Build de l'image Docker
+  build_and_scan:
+    name: Build and Security Scan
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker Image
         run: docker build -t tp-app:${{ github.sha }} app/
-
-      - name: Scan de vulnérabilités (Trivy)
+      - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'tp-app:${{ github.sha }}'
@@ -31,16 +37,32 @@ jobs:
           exit-code: '0'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
+      - name: Save Docker Image
+        run: docker save -o app-image.tar tp-app:${{ github.sha }}
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: app-image.tar
 
-      - name: Lancement du conteneur
+  functional_test:
+    name: Functional Testing
+    needs: build_and_scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+      - name: Load Docker Image
+        run: docker load -i app-image.tar
+      - name: Run Container
         run: docker run -d -p 8080:5000 --name test-app tp-app:${{ github.sha }}
-
-      - name: Attente démarrage
+      - name: Wait for startup
         run: sleep 5
-
-      - name: Vérification de l'API (/health)
+      - name: Check Health Endpoint
         run: curl -f http://localhost:8080/health
-
-      - name: Logs du conteneur (si échec)
+      - name: Container Logs
         if: failure()
         run: docker logs test-app
