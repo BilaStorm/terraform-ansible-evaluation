@@ -21,13 +21,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # 6. Copie du reste du code source
 COPY . .
 
-# 7. SÉCURITÉ : Créer un utilisateur spécifique pour ne pas tourner en root
-# (Best practice absolue en prod)
-RUN useradd -m appuser
-USER appuser
-
-# 8. Exposition du port
+# 7. Exposition du port
 EXPOSE 5000
 
-# 9. Commande de lancement
+# 8. Commande de lancement
 CMD ["python", "app.py"]
