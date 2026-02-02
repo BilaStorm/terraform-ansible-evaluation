@@ -78,45 +78,11 @@ docs/
 
 
 
-# TP Évalutation — Documentation/Livrable
+# TP Évaluation — Documentation/Livrable
 
 ## Synthèse du Projet
 
 Ce projet automatise le déploiement d'une application web Python (Flask) derrière un serveur web Nginx. L'objectif est de fournir une infrastructure reproductible, sécurisée et testée automatiquement, sans aucune intervention manuelle ni dépendance au Cloud public.
-
-
-
-## Pré-requis Logiciels
-Avant de commencer, assurez-vous d'avoir installé :
-
-- Docker Desktop (ou Engine)
-
-- Terraform (v1.5+)
-
-- Ansible (v2.9+)
-
-- Git
-
-
-
-## Installation & Récupération du Projet
-Avant de lancer le déploiement, vous devez récupérer le code source sur votre machine.
-
-### Méthode 1 : Via GitHub Desktop (Recommandé pour débutants)
-Sur la page GitHub du projet, cliquez sur le bouton "Fork" (en haut à droite) pour créer une copie sur votre compte.
-Ouvrez GitHub Desktop.
-Allez dans File > Clone Repository.
-Sélectionnez votre fork dans la liste et choisissez un dossier local (ex: Documents/TP-DevOps).
-Cliquez sur Clone.
-
-### Méthode 2 : Via le Terminal (Git Bash / CMD)
-Forkez le projet sur GitHub.
-Ouvrez votre terminal et lancez :
-```text
-# Remplacez VOTRE_USER par votre nom d'utilisateur GitHub
-git clone https://github.com/VOTRE_USER/terraform-ansible-evaluation.git
-cd terraform-ansible-evaluation
-```
 
 
 
@@ -158,6 +124,40 @@ infra/
     providers.tf/
     README.md/
     versions.tf/
+```
+
+
+
+## Pré-requis Logiciels
+Avant de commencer, assurez-vous d'avoir installé :
+
+- Docker Desktop (ou Engine)
+
+- Terraform (v1.5+)
+
+- Ansible (v2.9+)
+
+- Git
+
+
+
+## Installation & Récupération du Projet
+Avant de lancer le déploiement, vous devez récupérer le code source sur votre machine.
+
+### Méthode 1 : Via GitHub Desktop (Recommandé pour débutants)
+Sur la page GitHub du projet, cliquez sur le bouton "Fork" (en haut à droite) pour créer une copie sur votre compte.
+Ouvrez GitHub Desktop.
+Allez dans File > Clone Repository.
+Sélectionnez votre fork dans la liste et choisissez un dossier local (ex: Documents/TP-DevOps).
+Cliquez sur Clone.
+
+### Méthode 2 : Via le Terminal (Git Bash / CMD)
+Forkez le projet sur GitHub.
+Ouvrez votre terminal et lancez :
+```text
+# Remplacez VOTRE_USER par votre nom d'utilisateur GitHub
+git clone https://github.com/VOTRE_USER/terraform-ansible-evaluation.git
+cd terraform-ansible-evaluation
 ```
 
 
