@@ -78,11 +78,24 @@ docs/
 
 
 
-# TP Évalutation — Documentation
+# TP Évalutation — Documentation/Livrable
 
 ## Synthèse du Projet
 
 Ce projet automatise le déploiement d'une application web Python (Flask) derrière un serveur web Nginx. L'objectif est de fournir une infrastructure reproductible, sécurisée et testée automatiquement, sans aucune intervention manuelle ni dépendance au Cloud public.
+
+
+
+## Pré-requis Logiciels
+Avant de commencer, assurez-vous d'avoir installé :
+
+- Docker Desktop (ou Engine)
+
+- Terraform (v1.5+)
+
+- Ansible (v2.9+)
+
+- Git
 
 
 
@@ -168,10 +181,19 @@ ansible-playbook -i inventory.ini site.yml
 ```
 
 ### Étape 3) Vérification
-L'application est accessible. La réponse JSON inclut le hostname (ID du conteneur) pour prouver l'exécution dynamique.
+L'application est accessible. La réponse JSON inclut le hostname (ID du conteneur).
 ```text
 curl http://localhost:8080/health
 # Réponse attendue : {"hostname": "a1b2c3d4...", "status": "healthy"}
+```
+
+
+
+## Nettoyage de l'environnement
+Pour détruire proprement toute l'infrastructure (conteneurs, réseau) :
+```text
+cd infra/terraform
+terraform destroy -auto-approve
 ```
 
 
